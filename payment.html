@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Checkout</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .payment-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .payment-container h2 {
+            margin-bottom: 8px;
+            color: #333333;
+            text-align: center;
+        }
+
+        .order-summary {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: #28a745;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .row .input-group {
+            flex: 1;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .pay-btn:hover {
+            background-color: #218838;
+        }
+
+        .secure-notice {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="payment-container">
+        <h2>Secure Checkout</h2>
+        <div class="order-summary">
+            <span>Total Amount Due:</span>
+            <span>$49.99</span>
+        </div>
+
+        <form id="payment-form" action="/process-payment-endpoint" method="POST">
+            <div class="input-group">
+                <label for="cardholder">Cardholder Name</label>
+                <input type="text" id="cardholder" name="cardholder" required autocomplete="cc-name" placeholder="John Doe">
+            </div>
+
+            <div class="input-group">
+                <label for="cardnumber">Card Number</label>
+                <input type="text" id="cardnumber" name="cardnumber" required autocomplete="cc-number" placeholder="1234 5678 1234 5678" maxlength="19">
+            </div>
+            
+            <div class="row">
+                <div class="input-group">
+                    <label for="expiry">Expiry Date</label>
+                    <input type="text" id="expiry" name="expiry" required autocomplete="cc-exp" placeholder="MM/YY" maxlength="5">
+                </div>
+
+                <div class="input-group">
+                    <label for="cvc">CVC / CVV</label>
+                    <input type="password" id="cvc" name="cvc" required autocomplete="cc-csc" placeholder="123" maxlength="4">
+                </div>
+            </div>
+
+            <button type="submit" class="pay-btn">Pay Now</button>
+        </form>
+
+        <div class="secure-notice">
+            🔒 Your transaction is secure and encrypted.
+        </div>
+    </div>
+
+    <script>
+        // Simple client-side formatting for card inputs
+        const cardNumber = document.getElementById('cardnumber');
+        const expiry = document.getElementById('expiry');
+
+        // Format card number with spaces every 4 digits
+        cardNumber.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = value.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+
+            if (parts.length > 0) {
+                e.target.value = parts.join(' ');
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // Format expiry date with a slash (MM/YY)
+        expiry.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+            if (value.length >= 2) {
+                e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            } else {
+                e.target.value = value;
+            }
+        });
+    </script>
+</body>
+</html>
+
